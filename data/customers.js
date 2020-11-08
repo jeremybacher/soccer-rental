@@ -1,19 +1,40 @@
 const connection = require('./connections');
 
-async function getByUsername(username){
+async function insert(customer){
+    customer._id = await connection.getNextSequenceValue("customers", "customerId");
     const connectionMongo = await connection.getConnection();
-    const customer = await connectionMongo.db('soccer-rental')
+    const result = await connectionMongo.db(process.env.DB_NAME)
                         .collection('customers')
-                        .findOne({username: username});
+                        .insertOne(customer);
     return customer;
 }
 
-async function post(customer){
+async function update(customer){
     const connectionMongo = await connection.getConnection();
-    const result = await connectionMongo.db('soccer-rental')
+    const query = {_id: parseInt(customer._id)}
+    let newvalues = {
+        $set: {
+            name: customer.name,
+            lastname: customer.lastname,
+            email: customer.email,
+            phone: customer.phone
+        }
+    }
+    if (customer.password) {
+        newvalues.$set.password = customer.password
+    }
+    const result = await connectionMongo.db(process.env.DB_NAME)
                         .collection('customers')
-                        .insertOne(customer);
+                        .updateOne(query, newvalues);
     return result;
 }
 
-module.exports = { post, getByUsername }
+async function getByEmail(email){
+    const connectionMongo = await connection.getConnection();
+    const customer = await connectionMongo.db(process.env.DB_NAME)
+                        .collection('customers')
+                        .findOne({email: email});
+    return customer;
+}
+
+module.exports = { insert, update, getByEmail }

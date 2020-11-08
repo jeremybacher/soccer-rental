@@ -1,46 +1,113 @@
 const express = require('express');
 const router = express.Router();
-const dataOwners = require('../data/owners');
+const data = require('../data/owners');
 const { hash, authenticateToken } = require('./login');
 
-// post user
+// POST Owner
+/*
+{
+  "name": "Example",
+  "lastname": "Example",
+  "email": "example@example.com",
+  "password": "examplee",
+  "phone": "1122334455"
+}
+*/
 router.post('/', async (req, res) => {
-    const hashedPassword = await hash(req.body.password)
-    const owner = {
-      username: req.body.username,
-      password: hashedPassword
-    };
-    try{
-      const result = await dataOwners.insertOwner(owner);
-      res.json(result);
-    }
-    catch (error) {
-      res.status(500).send(error);
-    }
+    if (req.body.name && req.body.lastname && req.body.email && req.body.password && req.body.phone) {
+      if (validateOwner(req.body.name, req.body.lastname, req.body.email, req.body.phone, req.body.password)) {
+        const hashedPassword = await hash(req.body.password)
+        const owner = {
+          name: req.body.name,
+          lastname: req.body.lastname,
+          email: req.body.email,
+          password: hashedPassword,
+          phone: req.body.phone
+        }
+        await data.insert(owner)
+          .then((result) => {
+            res.json(result);
+          })
+          .catch((err) => {
+            res.status(500).send({"description": "Something went wrong, err: " + err});
+          })
+      } else {
+        res.status(400).send({"error": "fields are invalids"})
+      }
+    } else {
+      res.status(400).send({"description": "Some fields are lost, you must send name, lastname, email, password and phone."});
+    }    
 });
 
-// Modificacion de inventor
-router.put('/:id', authenticateToken, async (req, res) =>{
-    const owner = req.body;
-    console.log(req.params.id)
-    try {
-        owner._id = req.params.id;
-      const result = await dataOwners.updateOwner(owner);
-      res.json(result);
-      
-    } catch (error) {
-      res.status(500).send(error);
+// UPDATE Owner
+/*
+{
+  "name": "Example",
+  "lastname": "Example",
+  "email": "example@example.com",
+  "password": "examples",
+  "phone": "1122334455"
+}
+*/
+router.put('/:id', authenticateToken, async (req, res) =>{    
+  if (req.body.name && req.body.lastname && req.body.email && req.body.phone) {    
+    // Ask if user is able to modify
+    if (req.user._id == parseInt(req.params.id)) {
+      let validFileds = validateOwner(req.body.name, req.body.lastname, req.body.email, req.body.phone)
+      if (req.body.password) {
+        validFileds = validateOwner(req.body.name, req.body.lastname, req.body.email, req.body.phone, req.body.password)
+      }
+      if (validFileds) {
+        let owner = {
+          _id: req.user._id,
+          name: req.body.name,
+          lastname: req.body.lastname,
+          email: req.body.email,
+          phone: req.body.phone
+        }
+        if (req.body.password) {
+          const hashedPassword = await hash(req.body.password)
+          owner.password = hashedPassword
+        }
+        await data.update(owner)
+          .then((result) => {
+            res.json(result);
+          })
+          .catch((err) => {
+            res.status(500).send({"description": "Something went wrong, err: " + err});
+          })
+      } else {
+        res.status(400).send({"error": "fields are invalids"})
+      }
+    } else {
+      res.status(403).send({"description": "You can not modify this user"});
     }
-  });
-  
-  // Eliminacion de owner
-  router.delete('/:id', authenticateToken, async (req, res)=>{
-    try {
-      const result = await dataOwners.deleteOwner(req.params.id);
-      res.send(result);
-    } catch (error) {
-      res.status(500).send(error);
-    }
-  });
+  } else {
+    res.status(400).send({"description": "Some fields are lost, you must send name, lastname, email, password and phone."});
+  }
+});
+
+// Validate Owner
+function validateOwner(name, lastname, email, phone, password = "optional") {
+  const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  const phoneRegexp = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g;
+  let valid = true
+  if (name.length < 5 || name.length > 15) {
+    valid = false
+  }
+  if (lastname.length < 5 || lastname.length > 15) {
+    valid = false
+  }
+  if (!emailRegexp.test(email)) {
+    valid = false
+  }
+  if (password.length < 8 || password.length > 15) {
+    valid = false
+  }
+  if (!phoneRegexp.test(phone)) {
+    valid = false
+  }
+  return valid
+}
 
 module.exports = router;
