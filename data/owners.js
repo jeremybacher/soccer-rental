@@ -6,7 +6,7 @@ async function insert(owner){
     const result = await connectionMongo.db(process.env.DB_NAME)
                         .collection('owners')
                         .insertOne(owner);
-    return owner;
+    return result.ops[0];
 }
 
 async function update(owner){
@@ -23,10 +23,10 @@ async function update(owner){
     if (owner.password) {
         newvalues.$set.password = owner.password
     }
-    const result = await connectionMongo.db(process.env.DB_NAME)
-                        .collection('owners')
-                        .updateOne(query, newvalues);
-    return result;
+    await connectionMongo.db(process.env.DB_NAME)
+                    .collection('owners')
+                    .updateOne(query, newvalues);
+    return owner;
 }
 
 async function getByEmail(email){

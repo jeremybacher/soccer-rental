@@ -50,7 +50,7 @@ router.post('/', async (req, res) => {
 }
 */
 router.put('/:id', authenticateToken, async (req, res) =>{    
-  if (req.body.name && req.body.lastname && req.body.email && req.body.phone) {    
+  if (req.body.name && req.body.lastname && req.body.email && req.body.phone) {   
     // Ask if user is able to modify
     if (req.user._id == parseInt(req.params.id)) {
       let validFileds = validateOwner(req.body.name, req.body.lastname, req.body.email, req.body.phone)

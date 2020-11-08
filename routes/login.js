@@ -26,7 +26,8 @@ function authenticateToken(req, res, next) {
   if (token == null) return res.status(401).json({"message": "token is required"})
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
       if (err) return res.status(403).json({"message": "invalid token"})
-      req.user = user
+      req.user = user.response
+      req.user.type = user.type
       next()
   })
 }
@@ -42,15 +43,17 @@ function authenticateToken(req, res, next) {
 router.post('/', (req, res) => {
   if (req.body.email && req.body.password) {
     let data = dataOwners
+    let type = 'owner'
     if(!req.body.owner){
       data = dataCustomers
+      type = 'customer'
     }
     data.getByEmail(req.body.email)
       .then(async response => {
         if (response != null) {
           const match = await compare(req.body.password, response.password);
           if (match) {
-            const token = generateAccessToken(response);
+            const token = generateAccessToken({response: response, type: type});
             res.json({ "token": token});
           } else {
             res.status(401).json({ "message": "invalid data" })
@@ -68,5 +71,4 @@ router.post('/', (req, res) => {
   }
 });
 
-/* module.exports = { hash, router }; */
 module.exports = { router, authenticateToken, hash };
