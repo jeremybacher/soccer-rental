@@ -22,10 +22,23 @@ async function listByFilters(neighborhood, date, players){
     query[filterFrom] = { $lte: time }
     query[filterTo] = { $gte: time }
     const connectionMongo = await connection.getConnection();
-    const owner = await connectionMongo.db(process.env.DB_NAME)
+    const courts = await connectionMongo.db(process.env.DB_NAME)
                         .collection('courts')
                         .find(query).toArray();
-    return owner;
+
+    console.log(courts)
+
+    const courtsAvailables = courts.filter(court => { 
+        console.log(court)
+        const reservations = court.reservations.filter(reservation => reservation.date == date)
+        console.log(reservations)
+        if (!reservations) {
+            return court
+        }
+    })
+    // console.log(courtsAvailables[0].reservations)
+    console.log(courtsAvailables)
+    return courtsAvailables;
 }
 
 async function addReservation(courtId, reservation){
