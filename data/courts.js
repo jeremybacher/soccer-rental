@@ -26,18 +26,13 @@ async function listByFilters(neighborhood, date, players){
                         .collection('courts')
                         .find(query).toArray();
 
-    console.log(courts)
-
     const courtsAvailables = courts.filter(court => { 
-        console.log(court)
-        const reservations = court.reservations.filter(reservation => reservation.date == date)
+        const reservations = court.reservations.filter(reservation => reservation.date != date)
         console.log(reservations)
-        if (!reservations) {
+        if (!reservations.length) {
             return court
         }
     })
-    // console.log(courtsAvailables[0].reservations)
-    console.log(courtsAvailables)
     return courtsAvailables;
 }
 

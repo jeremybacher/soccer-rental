@@ -59,6 +59,14 @@ router.post('/', authenticateToken, async (req, res) =>{
     }    
 });
 
+// GET Courts
+/*
+{
+    "players": 11,
+    "neighborhood": "Almagro",
+    "date": 1604916000
+}
+*/
 router.get('/', authenticateToken, async (req, res) =>{    
     if (req.body.neighborhood && req.body.players && req.body.date) {   
         await data.listByFilters(req.body.neighborhood, req.body.date, req.body.players)
