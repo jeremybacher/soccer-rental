@@ -25,8 +25,6 @@ async function listByFilters(neighborhood, date, players){
     const courts = await connectionMongo.db(process.env.DB_NAME)
                         .collection('courts')
                         .find(query).toArray();
-    // console.log(courts)
-
     const courtsAvailables = courts.filter(court => {
         const reservations = court.reservations.filter(reservation => reservation.date == date)
         if (!reservations.length) {
