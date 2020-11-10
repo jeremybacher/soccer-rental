@@ -23,13 +23,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use(cors())
 app.use('/login', loginRouter);
 app.use('/customers', customersRouter);
 app.use('/owners', ownersRouter);
 app.use('/courts', courtsRouter);
 app.use('/reservations', reservationsRouter);
-
-app.use(cors())
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
