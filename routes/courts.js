@@ -52,7 +52,7 @@ router.post('/', authenticateToken, async (req, res) =>{
                     res.status(500).send({"description": "Something went wrong, err: " + err});
                 })
         } else {
-            res.status(400).send({"description": "Some fields are lost, you must send players, hourprice, address, description and calendar."});
+            res.status(400).send({"description": "Some fields are lost, you must send players, hourprice, address, description, services, neighborhood and calendar."});
         }
     } else {
         res.status(403).send({"description": "You can not create court"});
@@ -70,7 +70,7 @@ router.get('/', authenticateToken, async (req, res) => {
                 res.status(500).send({"description": "Something went wrong, err: " + err});
             })
     } else {
-        res.status(400).send({"description": "Some fields are lost, you must send players, hourprice, address, description and calendar."});
+        res.status(400).send({"description": "Some fields are lost, you must send players, neighborhood and date."});
     } 
 });
 
