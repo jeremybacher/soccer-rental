@@ -59,17 +59,10 @@ router.post('/', authenticateToken, async (req, res) =>{
     }    
 });
 
-// GET Courts
-/*
-{
-    "players": 11,
-    "neighborhood": "Almagro",
-    "date": 1604916000
-}
-*/
-router.get('/', authenticateToken, async (req, res) =>{    
-    if (req.body.neighborhood && req.body.players && req.body.date) {   
-        await data.listByFilters(req.body.neighborhood, req.body.date, req.body.players)
+// GET Courts ?players=11&neighborhood=Almagro&date=1605092400
+router.get('/', authenticateToken, async (req, res) => {
+    if (req.query.neighborhood && req.query.players && req.query.date) {   
+        await data.listByFilters(req.query.neighborhood, req.query.date, req.query.players)
             .then((result) => {
                 res.json(result);
             })
