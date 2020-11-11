@@ -15,9 +15,9 @@ router.post('/', authenticateToken, async (req, res) =>{
         if (req.body.court && req.body.date) {   
             let reservation = {
                 customer: req.user._id,
-                date: req.body.date
+                date: parseInt(req.body.date)
             }
-            await data.addReservation(req.body.court, reservation)
+            await data.addReservation(parseInt(req.body.court), reservation)
                 .then((result) => {
                     res.json(result);
                 })
@@ -37,7 +37,11 @@ router.get('/customer', authenticateToken, async (req, res) => {
     if (req.user.type == 'customer') {
         await data.getReservationsByCustomer(parseInt(req.user._id))
             .then((result) => {
-                res.json(result);
+                if (result.length > 0) {
+                    res.json(result);
+                } else {
+                    res.status(404).send({"description": "no reservations were"});
+                }
             })
             .catch((err) => {
                 res.status(500).send({"description": "something went wrong, err: " + err});
