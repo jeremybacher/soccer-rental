@@ -17,7 +17,7 @@ async function listByFilters(neighborhood, date, players){
     const filterTo = "calendar." + day.toString() + ".to"
     const query = {
         neighborhood: neighborhood,
-        players: players
+        players: parseInt(players)
     }
     query[filterFrom] = { $lte: time }
     query[filterTo] = { $gte: time }
