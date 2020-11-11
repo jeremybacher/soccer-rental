@@ -10,14 +10,14 @@ async function insert(court){
 }
 
 async function listByFilters(neighborhood, date, players){
-    const timestamp = (new Date(parseInt(date)))
+    const timestamp = (new Date(date))
     const day = timestamp.toLocaleString('en-us', { weekday:'long' }).toLowerCase()
     const time = timestamp.getHours()
     const filterFrom = "calendar." + day.toString() + ".from"
     const filterTo = "calendar." + day.toString() + ".to"
     const query = {
         neighborhood: neighborhood,
-        players: parseInt(players)
+        players: players
     }
     query[filterFrom] = { $lte: time }
     query[filterTo] = { $gte: time }

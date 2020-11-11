@@ -62,7 +62,7 @@ router.post('/', authenticateToken, async (req, res) =>{
 // GET Courts ?players=11&neighborhood=Almagro&date=1605092400
 router.get('/', authenticateToken, async (req, res) => {
     if (req.query.neighborhood && req.query.players && req.query.date) {   
-        await data.listByFilters(req.query.neighborhood, req.query.date, req.query.players)
+        await data.listByFilters(req.query.neighborhood, parseInt(req.query.date), parseInt(req.query.players))
             .then((result) => {
                 res.json(result);
             })
