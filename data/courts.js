@@ -47,6 +47,20 @@ async function listByFilters(neighborhood, date, players){
 
 async function addReservation(courtId, reservation){
     const connectionMongo = await connection.getConnection();
+    const queryValidateReservation = {
+        _id: courtId,
+        reservations: {
+            $elemMatch: {
+                date: reservation.date
+            }
+        }
+    }
+    const courtValidate = await connectionMongo.db(process.env.DB_NAME)
+                        .collection('courts')
+                        .findOne(queryValidateReservation);
+    if (courtValidate != null) {
+        return null
+    }
     const query = {_id: parseInt(courtId)}
     let court = await getById(courtId)
     court.reservations.push(reservation) 

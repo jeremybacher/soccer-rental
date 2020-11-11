@@ -19,7 +19,11 @@ router.post('/', authenticateToken, async (req, res) =>{
             }
             await data.addReservation(parseInt(req.body.court), reservation)
                 .then((result) => {
-                    res.json(result);
+                    if (result != null) {
+                        res.json(result);
+                    } else {
+                        res.status(400).send({"description": "this date is reserved, please pick another one"});
+                    }
                 })
                 .catch((err) => {
                     res.status(500).send({"description": "Something went wrong, err: " + err});
