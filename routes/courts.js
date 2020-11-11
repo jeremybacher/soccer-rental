@@ -49,13 +49,13 @@ router.post('/', authenticateToken, async (req, res) =>{
                     res.json(result);
                 })
                 .catch((err) => {
-                    res.status(500).send({"description": "Something went wrong, err: " + err});
+                    res.status(500).send({"description": "something went wrong, err: " + err});
                 })
         } else {
-            res.status(400).send({"description": "Some fields are lost, you must send players, hourprice, address, description, services, neighborhood and calendar."});
+            res.status(400).send({"description": "some fields are lost, you must send players, hourprice, address, description, services, neighborhood and calendar."});
         }
     } else {
-        res.status(403).send({"description": "You can not create court"});
+        res.status(403).send({"description": "you can not create court"});
     }    
 });
 
@@ -67,11 +67,41 @@ router.get('/', authenticateToken, async (req, res) => {
                 res.json(result);
             })
             .catch((err) => {
-                res.status(500).send({"description": "Something went wrong, err: " + err});
+                res.status(500).send({"description": "something went wrong, err: " + err});
             })
     } else {
-        res.status(400).send({"description": "Some fields are lost, you must send players, neighborhood and date."});
+        res.status(400).send({"description": "some fields are lost, you must send players, neighborhood and date."});
     } 
+});
+
+// GET Courts /owner
+router.get('/owner', authenticateToken, async (req, res) => {
+    if (req.user.type == 'owner') {
+        await data.list(parseInt(req.user._id))
+            .then((result) => {
+                res.json(result);
+            })
+            .catch((err) => {
+                res.status(500).send({"description": "something went wrong, err: " + err});
+            })
+    } else {
+        res.status(403).send({"description": "you must be owner"});
+    }    
+});
+
+// GET Courts /:id
+router.get('/:id', authenticateToken, async (req, res) => {
+    if (req.params.id) {
+        await data.getById(parseInt(req.params.id))
+            .then((result) => {
+                res.json(result);
+            })
+            .catch((err) => {
+                res.status(500).send({"description": "something went wrong, err: " + err});
+            })
+    } else {
+        res.status(403).send({"description": "id is requerid"});
+    }    
 });
 
 module.exports = router;

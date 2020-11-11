@@ -9,6 +9,17 @@ async function insert(court){
     return result.ops[0];
 }
 
+async function list(ownerId){
+    const query = {
+        owner: ownerId,
+    }
+    const connectionMongo = await connection.getConnection();
+    const courts = await connectionMongo.db(process.env.DB_NAME)
+                        .collection('courts')
+                        .find(query).toArray();
+    return courts;
+}
+
 async function listByFilters(neighborhood, date, players){
     const timestamp = new Date(date * 1000)
     const day = timestamp.toLocaleString('en-us', { weekday:'long' }).toLowerCase()
@@ -58,4 +69,4 @@ async function getById(id){
     return court;
 }
 
-module.exports = { insert, addReservation, listByFilters }
+module.exports = { insert, addReservation, listByFilters, list, getById }

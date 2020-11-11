@@ -29,13 +29,13 @@ router.post('/', async (req, res) => {
           res.json(result);
         })
         .catch((err) => {
-          res.status(500).send({"description": "Something went wrong, err: " + err});
+          res.status(500).send({"description": "something went wrong, err: " + err});
         })
     } else {
       res.status(400).send({"error": "fields are invalids"})
     }
   } else {
-    res.status(400).send({"description": "Some fields are lost, you must send name, lastname, email, password and phone."});
+    res.status(400).send({"description": "some fields are lost, you must send name, lastname, email, password and phone."});
   }    
 });
 
@@ -74,16 +74,16 @@ router.put('/:id', authenticateToken, async (req, res) =>{
             res.json(result);
           })
           .catch((err) => {
-            res.status(500).send({"description": "Something went wrong, err: " + err});
+            res.status(500).send({"description": "something went wrong, err: " + err});
           })
       } else {
         res.status(400).send({"error": "fields are invalids"})
       }
     } else {
-      res.status(403).send({"description": "You can not modify this user"});
+      res.status(403).send({"description": "you can not modify this user"});
     }
   } else {
-    res.status(400).send({"description": "Some fields are lost, you must send name, lastname, email, password and phone."});
+    res.status(400).send({"description": "some fields are lost, you must send name, lastname, email, password and phone."});
   }
 });
 
