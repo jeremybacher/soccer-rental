@@ -94,7 +94,11 @@ router.get('/:id', authenticateToken, async (req, res) => {
     if (req.params.id) {
         await data.getById(parseInt(req.params.id))
             .then((result) => {
-                res.json(result);
+                if (result != null) {
+                    res.json(result);
+                } else {
+                    res.status(404).send({"description": "court not found"});
+                }
             })
             .catch((err) => {
                 res.status(500).send({"description": "something went wrong, err: " + err});
