@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 
 function generateAccessToken(response) {
-  return jwt.sign(response, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1800s' });
+  return jwt.sign(response, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '86400s' });
 }
 
 async function hash(password) {
