@@ -10,7 +10,7 @@ async function insert(court){
 }
 
 async function listByFilters(neighborhood, date, players){
-    const timestamp = (new Date(date))
+    const timestamp = (new Date(parseInt(date)))
     const day = timestamp.toLocaleString('en-us', { weekday:'long' }).toLowerCase()
     const time = timestamp.getHours()
     const filterFrom = "calendar." + day.toString() + ".from"
