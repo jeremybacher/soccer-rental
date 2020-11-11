@@ -89,6 +89,21 @@ router.get('/owner', authenticateToken, async (req, res) => {
     }    
 });
 
+// GET Courts /customer
+router.get('/customer', authenticateToken, async (req, res) => {
+    if (req.user.type == 'customer') {
+        await data.getReservationsByCustomer(parseInt(req.user._id))
+            .then((result) => {
+                res.json(result);
+            })
+            .catch((err) => {
+                res.status(500).send({"description": "something went wrong, err: " + err});
+            })
+    } else {
+        res.status(403).send({"description": "you must be customer"});
+    }   
+});
+
 // GET Courts /:id
 router.get('/:id', authenticateToken, async (req, res) => {
     if (req.params.id) {

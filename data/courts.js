@@ -69,4 +69,19 @@ async function getById(id){
     return court;
 }
 
-module.exports = { insert, addReservation, listByFilters, list, getById }
+async function getReservationsByCustomer(customerId) {
+    const query = {
+        reservations: {
+            $elemMatch: {
+                customer: customerId
+            }
+        }
+    }
+    const connectionMongo = await connection.getConnection();
+    const courts = await connectionMongo.db(process.env.DB_NAME)
+                        .collection('courts')
+                        .find(query).toArray();
+    return courts;
+}
+
+module.exports = { insert, addReservation, listByFilters, list, getById, getReservationsByCustomer }
