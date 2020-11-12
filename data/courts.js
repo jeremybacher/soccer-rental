@@ -56,8 +56,8 @@ async function deleteCourt(courtId, ownerId) {
 
 async function listByFilters(neighborhood, date, players){
     const timestamp = new Date(date * 1000)
-    const day = timestamp.toLocaleString('en-us', { weekday:'long' }).toLowerCase()
-    const time = timestamp.getHours()
+    const day = timestamp.toLocaleString('en-US', { weekday:'long', timeZone: 'UTC' }).toLowerCase()
+    const time = timestamp.getUTCHours()
     const filterFrom = "calendar." + day.toString() + ".from"
     const filterTo = "calendar." + day.toString() + ".to"
     const query = {
@@ -70,6 +70,7 @@ async function listByFilters(neighborhood, date, players){
     const courts = await connectionMongo.db(process.env.DB_NAME)
                         .collection('courts')
                         .find(query).toArray();
+    console.log(query)
     const courtsAvailables = courts.filter(court => {
         const reservations = court.reservations.filter(reservation => reservation.date == date)
         if (!reservations.length) {

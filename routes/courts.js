@@ -35,7 +35,7 @@ router.post('/', authenticateToken, async (req, res) =>{
             let court = {
                 owner: req.user._id,
                 name: req.body.name,
-                players: req.body.players,
+                players: parseInt(req.body.players),
                 hourprice: req.body.hourprice,
                 address: req.body.address,
                 neighborhood: req.body.neighborhood,
