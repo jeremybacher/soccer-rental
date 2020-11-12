@@ -9,15 +9,49 @@ async function insert(court){
     return result.ops[0];
 }
 
-async function list(ownerId){
+async function list(ownerId){    
+    const connectionMongo = await connection.getConnection();
     const query = {
         owner: ownerId,
     }
-    const connectionMongo = await connection.getConnection();
     const courts = await connectionMongo.db(process.env.DB_NAME)
                         .collection('courts')
                         .find(query).toArray();
     return courts;
+}
+
+async function update(ownerId, courtId, court) {
+    const connectionMongo = await connection.getConnection();
+    const courtValidate = await connectionMongo.db(process.env.DB_NAME)
+                        .collection('courts')
+                        .findOne({_id: courtId, owner: ownerId});
+    if (courtValidate == null) {
+        return null
+    }
+    const newvalues = {
+        $set: {
+            name: court.name,
+            players: court.players,
+            hourprice: court.hourprice,
+            address: court.address,
+            neighborhood: court.neighborhood,
+            description: court.description,
+            services: court.services,
+            calendar: court.calendar
+        }
+    }
+    const result = await connectionMongo.db(process.env.DB_NAME)
+                    .collection('courts')
+                    .updateOne({_id: courtId, owner: ownerId}, newvalues);
+    return result;
+}
+
+async function deleteCourt(courtId, ownerId) {
+    const connectionMongo = await connection.getConnection();
+    const result = await connectionMongo.db(process.env.DB_NAME)
+                    .collection('courts')
+                    .deleteOne({_id: courtId, owner: ownerId});
+    return result;
 }
 
 async function listByFilters(neighborhood, date, players){
@@ -98,4 +132,4 @@ async function getReservationsByCustomer(customerId) {
     return courts;
 }
 
-module.exports = { insert, addReservation, listByFilters, list, getById, getReservationsByCustomer }
+module.exports = { insert, addReservation, listByFilters, list, getById, getReservationsByCustomer, update, deleteCourt }
