@@ -95,6 +95,21 @@ router.put('/:id', authenticateToken, async (req, res) =>{
   }
 });
 
+// GET Owner
+router.get('/', authenticateToken, async (req, res) =>{    
+  if (req.user._id && req.user.type == 'owner') {
+    await data.get(req.user._id)
+      .then((result) => {
+        res.json(result);
+      })
+      .catch((err) => {
+        res.status(500).send({"description": "something went wrong, err: " + err});
+      })
+  } else {
+    res.status(400).send({"description": "you are not an owner"});
+  }
+});
+
 // Validate Owner
 function validateOwner(name, lastname, email, phone, password = "optional") {
   const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;

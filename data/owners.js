@@ -53,4 +53,12 @@ async function getByEmail(email){
     return owner;
 }
 
-module.exports = { insert, update, getByEmail }
+async function get(id){
+    const connectionMongo = await connection.getConnection();
+    const owner = await connectionMongo.db(process.env.DB_NAME)
+                        .collection('owners')
+                        .findOne({_id: id});
+    return owner;
+}
+
+module.exports = { insert, update, getByEmail, get }
