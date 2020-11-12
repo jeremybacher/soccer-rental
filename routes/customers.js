@@ -26,7 +26,11 @@ router.post('/', async (req, res) => {
       };
       await data.insert(customer)
         .then((result) => {
-          res.json(result);
+          if (result != null) {
+            res.json(result);
+          } else {
+            res.status(400).send({"error": "pick another email, selected is used"})
+          }          
         })
         .catch((err) => {
           res.status(500).send({"description": "something went wrong, err: " + err});
@@ -71,7 +75,11 @@ router.put('/:id', authenticateToken, async (req, res) =>{
         }
         await data.update(customer)
           .then((result) => {
-            res.json(result);
+            if (result != null) {
+              res.json(result);
+            } else {
+              res.status(400).send({"error": "pick another email, selected is used"})
+            }  
           })
           .catch((err) => {
             res.status(500).send({"description": "something went wrong, err: " + err});

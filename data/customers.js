@@ -1,8 +1,14 @@
 const connection = require('./connections');
 
 async function insert(customer){
-    customer._id = await connection.getNextSequenceValue("customers", "customerId");
     const connectionMongo = await connection.getConnection();
+    const customerValidate = await connectionMongo.db(process.env.DB_NAME)
+                        .collection('customers')
+                        .findOne({email: customer.email});
+    if (customerValidate != null) {
+        return null
+    }
+    customer._id = await connection.getNextSequenceValue("customers", "customerId");
     const result = await connectionMongo.db(process.env.DB_NAME)
                         .collection('customers')
                         .insertOne(customer);
@@ -11,6 +17,16 @@ async function insert(customer){
 
 async function update(customer){
     const connectionMongo = await connection.getConnection();
+
+    const customerValidate = await connectionMongo.db(process.env.DB_NAME)
+                        .collection('customers')
+                        .findOne({email: customer.email});
+    if (customerValidate != null) {
+        if (customerValidate._id != customer._id) {
+            return null
+        }
+    }
+
     const query = {_id: parseInt(customer._id)}
     let newvalues = {
         $set: {
