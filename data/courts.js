@@ -129,7 +129,18 @@ async function getReservationsByCustomer(customerId) {
     const courts = await connectionMongo.db(process.env.DB_NAME)
                         .collection('courts')
                         .find(query).toArray();
-    return courts;
+ 
+    const reservations = courts.filter(court => {
+        const res = court.reservations.filter(reservation => {
+            if(reservation.customer == customerId) {
+                return reservation
+            }
+        })
+        court.reservations = res
+        return court
+    })
+
+    return reservations;
 }
 
 module.exports = { insert, addReservation, listByFilters, list, getById, getReservationsByCustomer, update, deleteCourt }
